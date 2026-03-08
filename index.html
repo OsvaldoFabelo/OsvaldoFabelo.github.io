@@ -8,12 +8,22 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy: #0a0e1a; --deep: #111827; --teal: #0ea5a0; --teal-light: #2dd4bf;
+      --navy: #0a0e1a; --teal: #0ea5a0; --teal-light: #2dd4bf;
       --gold: #f0a500; --white: #f5f7fa; --muted: #8b99b0; --card: #151d2e; --border: #1f2d45;
     }
     html { scroll-behavior: smooth; }
     body { background-color: var(--navy); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
-    .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 80px 6vw 60px; overflow: hidden; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: center; padding: 1rem 2rem; transition: background 0.4s, box-shadow 0.4s; }
+    nav.scrolled { background: rgba(10,14,26,0.85); backdrop-filter: blur(12px); box-shadow: 0 0 30px rgba(14,165,160,0.15), 0 1px 0 var(--border); }
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+    .nav-links a { display: block; padding: 0.45rem 1.1rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; border-radius: 2px; border: 1px solid transparent; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+    .nav-links a:hover { color: var(--teal-light); border-color: var(--teal); background: rgba(14,165,160,0.08); }
+    .nav-links a.active { color: var(--teal-light); border-color: var(--teal); background: rgba(14,165,160,0.12); box-shadow: 0 0 12px rgba(14,165,160,0.2); }
+
+    /* HERO */
+    .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 100px 6vw 60px; overflow: hidden; }
     .hero::after { content: ''; position: absolute; top: -20%; right: -10%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(14,165,160,0.12) 0%, transparent 70%); pointer-events: none; }
     .hero-eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--teal); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
     .hero-name { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 12vw, 10rem); line-height: 0.9; letter-spacing: 0.02em; color: var(--white); opacity: 0; animation: fadeUp 0.8s ease forwards 0.4s; }
@@ -24,10 +34,14 @@
     .contact-chip { display: flex; align-items: center; gap: 0.5rem; background: var(--card); border: 1px solid var(--border); border-radius: 2px; padding: 0.5rem 1rem; font-size: 0.82rem; color: var(--muted); text-decoration: none; transition: border-color 0.2s, color 0.2s; }
     .contact-chip:hover { border-color: var(--teal); color: var(--teal-light); }
     .hero-divider { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--teal), transparent); opacity: 0.4; }
+
+    /* MAIN */
     main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 80px 6vw 120px; display: grid; grid-template-columns: 1fr 340px; gap: 60px; }
     .section-label { display: flex; align-items: center; gap: 1rem; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--teal); margin-bottom: 2rem; }
     .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .summary-text { font-size: 1.05rem; line-height: 1.9; color: #c5cfe0; margin-bottom: 60px; }
+
+    /* EXPERIENCE */
     .experience { margin-bottom: 60px; }
     .job { position: relative; padding-left: 1.5rem; margin-bottom: 2.5rem; }
     .job::before { content: ''; position: absolute; left: 0; top: 8px; bottom: -2rem; width: 1px; background: var(--border); }
@@ -38,28 +52,48 @@
     .job-bullets { list-style: none; padding: 0; }
     .job-bullets li { font-size: 0.9rem; color: #8b99b0; padding: 0.3rem 0 0.3rem 1rem; position: relative; line-height: 1.6; }
     .job-bullets li::before { content: '▹'; position: absolute; left: 0; color: var(--teal); font-size: 0.7rem; top: 0.38rem; }
+
+    /* EDUCATION */
     .education { margin-bottom: 60px; }
     .edu-item { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--teal); padding: 1.2rem 1.5rem; margin-bottom: 1rem; transition: border-color 0.2s; }
     .edu-item:hover { border-left-color: var(--gold); }
     .edu-degree { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--white); margin-bottom: 0.2rem; }
     .edu-school { font-size: 0.82rem; color: var(--teal-light); }
     .edu-year { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* SKILLS — animated */
     .skills-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 40px; }
     .skill-bar { background: var(--card); border: 1px solid var(--border); padding: 0.7rem 1rem; font-size: 0.82rem; color: #c5cfe0; position: relative; overflow: hidden; transition: border-color 0.2s; }
     .skill-bar:hover { border-color: var(--teal); }
-    .skill-bar::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: var(--pct); background: linear-gradient(90deg, rgba(14,165,160,0.15), transparent); }
+    .skill-bar::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: linear-gradient(90deg, rgba(14,165,160,0.28), transparent); transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .skill-bar.animate::before { width: var(--pct); }
     .skill-name { position: relative; z-index: 1; }
+
+    /* CERTS */
     .cert-list { list-style: none; margin-bottom: 40px; }
     .cert-list li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.9rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: #c5cfe0; }
     .cert-list li:last-child { border-bottom: none; }
     .cert-icon { width: 28px; height: 28px; border-radius: 2px; background: rgba(14,165,160,0.15); border: 1px solid var(--teal); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--teal); font-size: 0.7rem; font-weight: 700; }
+
     footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: var(--border); letter-spacing: 0.1em; border-top: 1px solid var(--border); }
+
     @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 768px) { main { grid-template-columns: 1fr; gap: 40px; } .hero { padding: 60px 5vw 50px; } }
+    @media (max-width: 768px) { main { grid-template-columns: 1fr; gap: 40px; } .hero { padding: 80px 5vw 50px; } .nav-links a { padding: 0.4rem 0.7rem; font-size: 0.65rem; } }
   </style>
 </head>
 <body>
-<header class="hero">
+
+<nav id="navbar">
+  <ul class="nav-links">
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#summary">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#skills">Skills</a></li>
+  </ul>
+</nav>
+
+<header class="hero" id="home">
   <p class="hero-eyebrow">Psychiatric &amp; Family Nurse Practitioner</p>
   <h1 class="hero-name">Osvaldo<br/><span>Fabelo</span></h1>
   <p class="hero-credentials">FNP-C &nbsp;·&nbsp; PMHNP-BC</p>
@@ -70,13 +104,15 @@
   </div>
   <div class="hero-divider"></div>
 </header>
+
 <main>
   <div class="left-col">
-    <section>
+    <section id="summary">
       <p class="section-label">Professional Summary</p>
       <p class="summary-text">Dedicated dual-certified Family Nurse Practitioner and Psychiatric Mental Health Nurse Practitioner with clinical expertise in substance use disorder treatment and psychiatric care within residential settings. Skilled in comprehensive psychiatric evaluations, psychopharmacological management, and integrated treatment planning for patients navigating co-occurring mental health and addiction challenges. Committed to evidence-based practice and multidisciplinary collaboration to promote lasting recovery and mental wellness.</p>
     </section>
-    <section class="experience">
+
+    <section class="experience" id="experience">
       <p class="section-label">Experience</p>
       <div class="job">
         <div class="job-dot"></div>
@@ -91,7 +127,8 @@
         </ul>
       </div>
     </section>
-    <section class="education">
+
+    <section class="education" id="education">
       <p class="section-label">Education</p>
       <div class="edu-item">
         <p class="edu-degree">Master of Science — Psychiatric Mental Health Nurse Practitioner</p>
@@ -105,6 +142,7 @@
       </div>
     </section>
   </div>
+
   <aside class="sidebar">
     <section>
       <p class="section-label">Certifications</p>
@@ -115,7 +153,8 @@
         <li><span class="cert-icon">RN</span>Registered Nurse Licensure — Florida</li>
       </ul>
     </section>
-    <section>
+
+    <section id="skills">
       <p class="section-label">Clinical Skills</p>
       <div class="skills-grid">
         <div class="skill-bar" style="--pct:95%"><span class="skill-name">Psychiatric Evaluation &amp; Diagnosis</span></div>
@@ -132,6 +171,38 @@
     </section>
   </aside>
 </main>
+
 <footer>&copy; 2026 &nbsp;·&nbsp; Osvaldo Fabelo, FNP-C, PMHNP-BC &nbsp;·&nbsp; Pembroke Pines, FL</footer>
+
+<script>
+  // NAV: frosted glow on scroll + active section highlight
+  const navbar = document.getElementById('navbar');
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+    let current = 'home';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  });
+
+  // SKILLS: animate bars when scrolled into view
+  const skillBars = document.querySelectorAll('.skill-bar');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('animate'), i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  skillBars.forEach(bar => observer.observe(bar));
+</script>
+
 </body>
 </html>
